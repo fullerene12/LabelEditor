@@ -53,13 +53,6 @@
        <string/>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="3" column="12" colspan="2">
-        <widget class="QPushButton" name="close_video_pushButton">
-         <property name="text">
-          <string>Close</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="1">
         <widget class="QLabel" name="label_8">
          <property name="sizePolicy">
@@ -99,7 +92,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1" colspan="13">
+       <item row="0" column="1" colspan="14">
         <widget class="QSlider" name="current_frame_horizontalSlider">
          <property name="maximum">
           <number>99</number>
@@ -138,6 +131,92 @@
        <item row="3" column="2" colspan="6">
         <widget class="QLineEdit" name="video_file_path_lineEdit"/>
        </item>
+       <item row="4" column="11">
+        <widget class="QCheckBox" name="load_position_checkBox">
+         <property name="text">
+          <string>Load Position</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="5">
+        <widget class="QPushButton" name="next_bad_frame_pushButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>-&gt;</string>
+         </property>
+         <property name="shortcut">
+          <string>Alt+B</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" colspan="5">
+        <widget class="QSlider" name="current_bad_frame_horizontalSlider">
+         <property name="maximum">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="13">
+        <widget class="QDoubleSpinBox" name="total_frame_doubleSpinBox">
+         <property name="frame">
+          <bool>true</bool>
+         </property>
+         <property name="readOnly">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="9" colspan="3">
+        <widget class="QPushButton" name="load_pushButton">
+         <property name="text">
+          <string>Load</string>
+         </property>
+         <property name="shortcut">
+          <string>Ctrl+L</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="6">
+        <widget class="QPushButton" name="extrapolate_pushButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Extrapolate</string>
+         </property>
+         <property name="shortcut">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="14">
+        <widget class="QPushButton" name="next_frame_pushButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>-&gt;</string>
+         </property>
+         <property name="shortcut">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="6" colspan="2">
+        <widget class="QPushButton" name="save_current_frame_pushButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Save Current Frame</string>
+         </property>
+        </widget>
+       </item>
        <item row="4" column="1">
         <widget class="QLabel" name="label_4">
          <property name="text">
@@ -164,37 +243,20 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="9" colspan="3">
-        <widget class="QPushButton" name="load_pushButton">
+       <item row="1" column="7">
+        <widget class="QPushButton" name="clear_pushButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
-          <string>Load</string>
+          <string>clear</string>
          </property>
          <property name="shortcut">
-          <string>Ctrl+L</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="13">
-        <widget class="QPushButton" name="next_frame_pushButton">
-         <property name="text">
-          <string>-&gt;</string>
-         </property>
-         <property name="shortcut">
-          <string/>
+          <string>Alt+C</string>
          </property>
         </widget>
        </item>
        <item row="1" column="12">
-        <widget class="QDoubleSpinBox" name="total_frame_doubleSpinBox">
-         <property name="frame">
-          <bool>true</bool>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="11">
         <widget class="QLabel" name="label">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -207,10 +269,30 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="10">
+       <item row="3" column="12" colspan="3">
+        <widget class="QPushButton" name="close_video_pushButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Close</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="12" colspan="3">
+        <widget class="QProgressBar" name="progressBar">
+         <property name="value">
+          <number>0</number>
+         </property>
+         <property name="format">
+          <string>%p% Loaded</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="11">
         <widget class="QDoubleSpinBox" name="current_frame_doubleSpinBox"/>
        </item>
-       <item row="1" column="9">
+       <item row="1" column="10">
         <widget class="QLabel" name="label_7">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -223,50 +305,13 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="5">
-        <widget class="QPushButton" name="next_bad_frame_pushButton">
+       <item row="2" column="9" colspan="6">
+        <widget class="QPushButton" name="smooth_and_close_pushButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
-          <string>-&gt;</string>
-         </property>
-         <property name="shortcut">
-          <string>Alt+B</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="6">
-        <widget class="QPushButton" name="extrapolate_pushButton">
-         <property name="text">
-          <string>Extrapolate</string>
-         </property>
-         <property name="shortcut">
-          <string>Alt+B</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1" colspan="6">
-        <widget class="QSlider" name="current_bad_frame_horizontalSlider">
-         <property name="maximum">
-          <number>99</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="7">
-        <widget class="QPushButton" name="clear_pushButton">
-         <property name="text">
-          <string>clear</string>
-         </property>
-         <property name="shortcut">
-          <string>Alt+C</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="12" colspan="2">
-        <widget class="QProgressBar" name="progressBar">
-         <property name="value">
-          <number>0</number>
+          <string>Smooth and Close</string>
          </property>
         </widget>
        </item>

@@ -65,6 +65,10 @@ class App(QMainWindow):
                                               initial='DeepCut_resnet50_headtrackingAug7shuffle1_500000')
         self.position_suffix.connect_to_widget(self.ui.position_suffix_plainTextEdit)
 
+        # load_position flag
+        self.load_position = LoggedQuantity(name='load_position', dtype=bool, initial=True)
+        self.load_position.connect_to_widget(self.ui.load_position_checkBox)
+
         # connect button actions
         self.ui.load_pushButton.clicked.connect(self.load)
         self.ui.close_video_pushButton.clicked.connect(self.close_video)
@@ -85,46 +89,59 @@ class App(QMainWindow):
 
         self.show()
 
-    def update_label(self):
-        self.index_label.setText(str(self.slider.value()))
-
     def load(self):
         try:
             # load video file
             self.video = Video(self.video_file_path.value)
             self.total_frame.update_value(self.video.total_frames)
-            self.current_frame.change_min_max(vmin=0,vmax=self.video.total_frames-1)
+            self.current_frame.change_min_max(vmin=0, vmax=self.video.total_frames-1)
             self.current_frame.change_readonly(ro=False)
 
-            # connect click event to set label method
-            self.click_proxy = pg.SignalProxy(self.video_image.scene().sigMouseClicked, delay=0,
-                                              slot=self.set_label)
+            if self.load_position.value:
+                # connect click event to set label method
+                self.click_proxy = pg.SignalProxy(self.video_image.scene().sigMouseClicked, delay=0,
+                                                  slot=self.set_label)
 
-            # load coordinates for labels
-            self.data_path = self.video_file_path.value.split('.')[0] + self.position_suffix.value + '.h5'
-            self.data_set = pd.read_hdf(self.data_path)
-            self.num_label = self.data_set[self.position_suffix.value].keys().levshape[0]
-            self.labels = list()
-            for i in range(self.num_label):
-                self.labels.append(self.data_set[self.position_suffix.value].keys()[i * 3][0])
-            self.data_set[self.position_suffix.value].keys()[self.current_label_id * 3][0]
+                # load coordinates for labels
+                if self.video_file_path.value[-4:] == 'h264':
+                    self.data_path = self.video_file_path.value[:-5] + self.position_suffix.value + '.h5'
+                else:
+                    self.data_path = self.video_file_path.value.split('.')[0] + self.position_suffix.value + '.h5'
+                self.data_set = pd.read_hdf(self.data_path)
+                self.num_label = self.data_set[self.position_suffix.value].keys().levshape[0]
+                self.labels = list()
+                for i in range(self.num_label):
+                    self.labels.append(self.data_set[self.position_suffix.value].keys()[i * 3][0])
+                self.data_set[self.position_suffix.value].keys()[self.current_label_id * 3][0]
 
-            # generate a list for pens to draw the scatter plot
-            self.pens = list()
+                # generate a list for pens to draw the scatter plot
+                self.pens = list()
 
-            for i in range(self.num_label):
-                pen = pg.mkPen(color=pg.mkColor(i))
-                self.pens.append(pen)
+                for i in range(self.num_label):
+                    pen = pg.mkPen(color=pg.mkColor(i))
+                    self.pens.append(pen)
 
-            # check for bad frames and load the information
-            #self.ui.progressBar.setValue(50)
-            self.bad_frames = find_bad_frame(self.data_set, check_progress=True, progress_bar=self.ui.progressBar)
-            self.total_bad_frame.update_value(len(self.bad_frames))
-            self.current_bad_frame.change_min_max(vmin =0, vmax=self.total_bad_frame.value-1)
-            self.current_bad_frame.change_readonly(ro=False)
+                # check for bad frames and load the information
+                #self.ui.progressBar.setValue(50)
+                self.bad_frames = find_bad_frame(self.data_set, check_progress=True, progress_bar=self.ui.progressBar)
+                self.total_bad_frame.update_value(len(self.bad_frames))
+                self.current_bad_frame.change_min_max(vmin =0, vmax=self.total_bad_frame.value-1)
+                self.current_bad_frame.change_readonly(ro=False)
 
-            # counter for alternating highlighted label
-            self.current_label_id = 0
+                # counter for alternating highlighted label
+                self.current_label_id = 0
+
+                self.ui.extrapolate_pushButton.setEnabled(True)
+                self.ui.clear_pushButton.setEnabled(True)
+                self.ui.next_bad_frame_pushButton.setEnabled(True)
+                self.ui.smooth_and_close_pushButton.setEnabled(True)
+
+            self.ui.next_frame_pushButton.setEnabled(True)
+            self.ui.load_pushButton.setEnabled(False)
+            self.ui.close_video_pushButton.setEnabled(True)
+            self.video_file_path.change_readonly(ro=True)
+            self.position_suffix.change_readonly(ro=True)
+            self.load_position.change_readonly(ro=True)
 
             # refresh view box
             self.current_frame.update_value(1)
@@ -137,6 +154,17 @@ class App(QMainWindow):
             self.close_video()
 
     def close_video(self):
+        self.load_position.change_readonly(ro=False)
+        self.ui.extrapolate_pushButton.setEnabled(False)
+        self.ui.clear_pushButton.setEnabled(False)
+        self.ui.next_bad_frame_pushButton.setEnabled(False)
+        self.ui.smooth_and_close_pushButton.setEnabled(False)
+
+        self.ui.next_frame_pushButton.setEnabled(False)
+        self.ui.load_pushButton.setEnabled(True)
+        self.ui.close_video_pushButton.setEnabled(False)
+        self.video_file_path.change_readonly(ro=False)
+        self.position_suffix.change_readonly(ro=False)
         try:
             # clear all video contents
             self.total_frame.update_value(0)
@@ -185,18 +213,20 @@ class App(QMainWindow):
                 # load, display frame and draw label
                 frame = self.video.read_frame(i)
                 self.video_image.setImage(frame)
-                self.load_scatter(i)
+                if self.load_position.value:
+                    self.load_scatter(i)
             except Exception as ex_msg:
                 print(ex_msg)
 
     @Slot(float)
-    def load_bad_frame(self,i):
+    def load_bad_frame(self, i):
         if i>0:
             i = int(i)
             try:
                 frame_id = self.bad_frames[i]
                 self.current_frame.update_value(frame_id)
-                self.load_scatter(frame_id)
+                if self.load_position.value:
+                    self.load_scatter(frame_id)
             except Exception as ex_msg:
                 print(ex_msg)
 
@@ -302,7 +332,17 @@ class Video(object):
         self.cap = cv2.VideoCapture(self.file_name)
 
         # get number of frames, 7 is the propID for number of frames
-        self.num_frame = self.cap.get(7)
+        if self.file_name[-4:] == 'h264':
+            try:
+                meta_name = self.file_name[:-5] + '.npy'
+                vshape = np.load(meta_name)
+                self.num_frame = vshape[0]
+            except Exception:
+                self.num_frame = 0
+                print('Could not find metatdata file '+meta_name)
+
+        else:
+            self.num_frame = self.cap.get(7)
 
     def read_frame(self, i):
         # 1 is the propID for current frame

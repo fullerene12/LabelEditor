@@ -602,7 +602,8 @@ class LoggedQuantity(QtCore.QObject):
             for widget in self.widget_list:
                 if type(widget) in [QtWidgets.QDoubleSpinBox, pyqtgraph.widgets.SpinBox.SpinBox]:
                     widget.setReadOnly(self.ro)    
-                #TODO other widget types
+                if type(widget) in [QtWidgets.QCheckBox, QtWidgets.QPlainTextEdit, QtWidgets.QLineEdit]:
+                    widget.setEnabled(not self.ro)
             self.updated_readonly.emit(self.ro)
             
     def change_unit(self, unit):
@@ -758,6 +759,8 @@ class FileLQ(LoggedQuantity):
     
         assert type(pushButton) == QtWidgets.QPushButton
         pushButton.clicked.connect(self.file_browser)
+        self.button = pushButton
+        self.button.setEnabled(not self.ro)
     
     def file_browser(self):
         # TODO add default directory, etc
@@ -778,6 +781,11 @@ class FileLQ(LoggedQuantity):
         widget.layout().addWidget(lineEdit)
         widget.layout().addWidget(browseButton)
         return widget
+
+    def change_readonly(self, ro=True):
+        LoggedQuantity.change_readonly(self, ro)
+        if hasattr(self,'button'):
+            self.button.setEnabled(not self.ro)
 
 class ArrayLQ(LoggedQuantity):
     updated_shape = QtCore.Signal(str)
