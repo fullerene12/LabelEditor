@@ -14,8 +14,6 @@ def find_bad_frame(data_set, check_progress=False, progress_bar=None):
         for label in labels:
             if data_set[data_set_name][label]['likelihood'][i] < 0.95:
                 bad_frame = True
-            if data_set[data_set_name][label]['y'][i] > 350:
-                bad_frame = True
 
         if bad_frame:
             bad_frames.append(i)

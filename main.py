@@ -62,7 +62,7 @@ class App(QMainWindow):
 
         # position file suffix
         self.position_suffix = LoggedQuantity(name='position_suffix', dtype=str,
-                                              initial='DeepCut_resnet50_headtrackingAug7shuffle1_500000')
+                                              initial='DeepCut_resnet50_trackingledsJun17shuffle1_350000')
         self.position_suffix.connect_to_widget(self.ui.position_suffix_plainTextEdit)
 
         # load_position flag
@@ -105,6 +105,8 @@ class App(QMainWindow):
                 # load coordinates for labels
                 if self.video_file_path.value[-4:] == 'h264':
                     self.data_path = self.video_file_path.value[:-5] + self.position_suffix.value + '.h5'
+                elif self.video_file_path.value[-3:] == 'avi':
+                    self.data_path = self.video_file_path.value[:-4] + self.position_suffix.value + '.h5'
                 else:
                     self.data_path = self.video_file_path.value.split('.')[0] + self.position_suffix.value + '.h5'
                 self.data_set = pd.read_hdf(self.data_path)
@@ -122,7 +124,7 @@ class App(QMainWindow):
                     self.pens.append(pen)
 
                 # check for bad frames and load the information
-                #self.ui.progressBar.setValue(50)
+                self.ui.progressBar.setValue(50)
                 self.bad_frames = find_bad_frame(self.data_set, check_progress=True, progress_bar=self.ui.progressBar)
                 self.total_bad_frame.update_value(len(self.bad_frames))
                 self.current_bad_frame.change_min_max(vmin =0, vmax=self.total_bad_frame.value-1)
