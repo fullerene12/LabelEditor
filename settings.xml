@@ -1,0 +1,1 @@
+<label_editor_lettings><setting name="auto_path" value="True" /><setting name="likelihood" value="0.95" /><setting name="load_position" value="True" /><setting name="position_suffix" value="DeepCut_resnet101_trackingledsAug13shuffle1_500000" /><setting name="video_file_path" value="./" /></label_editor_lettings>

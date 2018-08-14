@@ -8,6 +8,7 @@ import pyqtgraph as pg
 import numpy as np
 import pandas as pd
 from frame_check import find_bad_frame
+import xml.etree.cElementTree as ET
 
 
 class App(QMainWindow):
@@ -34,9 +35,13 @@ class App(QMainWindow):
 
         # setup and load all logged quantities
 
+        # likelihood threshold
+        self.likelihood = LoggedQuantity(name='likelihood', dtype=float, ro=False, initial=0.95, vmin=0, vmax=1)
+        self.likelihood.connect_to_widget(self.ui.likelihood_doubleSpinBox)
+
         # total number of frames
         self.total_frame = LoggedQuantity(name='total_frame', dtype=int, ro=True, initial=0, vmin=0)
-        self.total_frame.connect_to_widget(self.total_frame_doubleSpinBox)
+        self.total_frame.connect_to_widget(self.ui.total_frame_doubleSpinBox)
 
         # current displayed frame
         self.current_frame = LoggedQuantity(name='current_frame', dtype=int, initial=0, ro=True,
@@ -57,15 +62,17 @@ class App(QMainWindow):
         self.current_bad_frame.updated_value.connect(self.load_bad_frame)
 
         # Video File Path
-        self.video_file_path = FileLQ(name='video_file_path',default_dir='.')
+        self.video_file_path = FileLQ(name='video_file_path',default_dir='./')
         self.video_file_path.connect_to_browse_widgets(self.ui.video_file_path_lineEdit, self.ui.set_dir_pushButton)
-
+        self.video_file_path.update_value('./')
         # position file suffix
         self.position_suffix = LoggedQuantity(name='position_suffix', dtype=str,
                                               initial='DeepCut_resnet101_trackingledsAug13shuffle1_500000')
         self.position_suffix.connect_to_widget(self.ui.position_suffix_plainTextEdit)
 
         # load_position flag
+        self.auto_path = LoggedQuantity(name='auto_path', dtype=bool, initial=True)
+        self.auto_path.connect_to_widget(self.ui.auto_path_checkBox)
         self.load_position = LoggedQuantity(name='load_position', dtype=bool, initial=True)
         self.load_position.connect_to_widget(self.ui.load_position_checkBox)
 
@@ -76,6 +83,8 @@ class App(QMainWindow):
         self.ui.next_bad_frame_pushButton.clicked.connect(self.next_bad_frame)
         self.ui.clear_pushButton.clicked.connect(self.clear)
         self.ui.extrapolate_pushButton.clicked.connect(self.extrapolate)
+        self.ui.actionSave_Settings.triggered.connect(self.save_settings)
+        self.ui.actionLoad_Settings.triggered.connect(self.load_settings)
 
         # declare other attributes
         self.video = None
@@ -88,6 +97,11 @@ class App(QMainWindow):
         self.pens = None
 
         self.show()
+
+        try:
+            self.load_settings()
+        except Exception as ex_msg:
+            print(ex_msg)
 
     def load(self):
         try:
@@ -127,7 +141,8 @@ class App(QMainWindow):
 
                 # check for bad frames and load the information
                 self.ui.progressBar.setValue(50)
-                self.bad_frames = find_bad_frame(self.data_set, check_progress=True, progress_bar=self.ui.progressBar)
+                self.bad_frames = find_bad_frame(self.data_set, likelihood=self.likelihood.value,
+                                                 check_progress=True, progress_bar=self.ui.progressBar)
                 self.total_bad_frame.update_value(len(self.bad_frames))
                 self.current_bad_frame.change_min_max(vmin =0, vmax=self.total_bad_frame.value-1)
                 self.current_bad_frame.change_readonly(ro=False)
@@ -143,6 +158,7 @@ class App(QMainWindow):
             self.ui.next_frame_pushButton.setEnabled(True)
             self.ui.load_pushButton.setEnabled(False)
             self.ui.close_video_pushButton.setEnabled(True)
+            self.likelihood.change_readonly(ro=True)
             self.video_file_path.change_readonly(ro=True)
             self.position_suffix.change_readonly(ro=True)
             self.load_position.change_readonly(ro=True)
@@ -167,8 +183,10 @@ class App(QMainWindow):
         self.ui.next_frame_pushButton.setEnabled(False)
         self.ui.load_pushButton.setEnabled(True)
         self.ui.close_video_pushButton.setEnabled(False)
+        self.likelihood.change_readonly(ro=False)
         self.video_file_path.change_readonly(ro=False)
         self.position_suffix.change_readonly(ro=False)
+
         try:
             # clear all video contents
             self.total_frame.update_value(0)
@@ -328,6 +346,35 @@ class App(QMainWindow):
 
         self.save_data_set()
 
+    def save_settings(self):
+        try:
+            file_name = 'settings.xml'
+            doc = ET.Element('label_editor_lettings')
+            item_list = dir(self)
+            for name in item_list:
+                item = getattr(self, name)
+                if str(type(item)) == "<class 'logged_quantity.LoggedQuantity'>":
+                    if not item.ro:
+                        ET.SubElement(doc, 'setting', name=item.name, value=str(item.value))
+
+            ET.SubElement(doc, 'setting', name='video_file_path', value=self.video_file_path.value)
+
+            tree = ET.ElementTree(doc)
+            tree.write(file_name)
+        except Exception as ex_msg:
+            print(ex_msg)
+
+    def load_settings(self):
+        try:
+            file_name = 'settings.xml'
+            settings = ET.parse(file_name).getroot()
+            for setting in settings:
+                if hasattr(self, setting.attrib['name']):
+                    value = setting.attrib['value']
+                    item = getattr(self, setting.attrib['name'])
+                    item.update_value(value)
+        except Exception as ex_msg:
+            print(ex_msg)
 
 class Video(object):
 
