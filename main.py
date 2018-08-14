@@ -62,7 +62,7 @@ class App(QMainWindow):
 
         # position file suffix
         self.position_suffix = LoggedQuantity(name='position_suffix', dtype=str,
-                                              initial='DeepCut_resnet50_trackingledsJun17shuffle1_350000')
+                                              initial='DeepCut_resnet101_trackingledsAug13shuffle1_500000')
         self.position_suffix.connect_to_widget(self.ui.position_suffix_plainTextEdit)
 
         # load_position flag
@@ -105,6 +105,8 @@ class App(QMainWindow):
                 # load coordinates for labels
                 if self.video_file_path.value[-4:] == 'h264':
                     self.data_path = self.video_file_path.value[:-5] + self.position_suffix.value + '.h5'
+                elif self.video_file_path.value[-3:] == 'mp4':
+                    self.data_path = self.video_file_path.value[:-4] + self.position_suffix.value + '.h5'
                 elif self.video_file_path.value[-3:] == 'avi':
                     self.data_path = self.video_file_path.value[:-4] + self.position_suffix.value + '.h5'
                 else:

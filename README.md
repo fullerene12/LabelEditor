@@ -2,18 +2,13 @@
 
 This is an Editor to adjust the labeling created by DeepLabCut
 
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
 ### Prerequisites
 
-First you will need to install Anaconda with Python 3.6, after installing Anaconda, you should install the following packages
+You will need to install Anaconda with Python 3.6, after installing Anaconda, you should install the following packages
 
 ```
 conda install numpy h5py pandas
-pip install pyqt pyqt5 pyside pyqtgraph
-pip install opencv-python==3.4.0.12
+pip install pyqt pyqt5 pyside pyqtgraph opencv-python
 ```
 
 ### Installing
