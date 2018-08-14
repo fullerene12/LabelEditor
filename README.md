@@ -7,7 +7,7 @@ This is an Editor to adjust the labeling created by DeepLabCut
 You will need to install Anaconda with Python 3.6, after installing Anaconda, you should install the following packages
 
 ```
-conda install numpy h5py pandas
+conda install numpy h5py pandas tqdm
 pip install pyqt pyqt5 pyside pyqtgraph opencv-python
 ```
 
