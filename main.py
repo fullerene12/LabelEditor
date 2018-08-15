@@ -1,5 +1,5 @@
 import sys
-from qtpy.QtWidgets import QApplication, QMainWindow, QInputDialog
+from qtpy.QtWidgets import QApplication, QMainWindow, QInputDialog, QFileDialog
 from qtpy.QtCore import Slot
 from qtpy import uic
 from logged_quantity import LoggedQuantity, FileLQ
@@ -85,6 +85,8 @@ class App(QMainWindow):
         self.ui.extrapolate_pushButton.clicked.connect(self.extrapolate)
         self.ui.actionSave_Settings.triggered.connect(self.save_settings)
         self.ui.actionLoad_Settings.triggered.connect(self.load_settings)
+        self.ui.actionSave_Settings_As.triggered.connect(self.save_settings_as)
+        self.ui.actionLoad_Settings_From.triggered.connect(self.load_settings_from)
 
         # declare other attributes
         self.video = None
@@ -163,6 +165,11 @@ class App(QMainWindow):
             self.position_suffix.change_readonly(ro=True)
             self.load_position.change_readonly(ro=True)
 
+            self.ui.actionSave_Settings.setEnabled(False)
+            self.ui.actionLoad_Settings.setEnabled(False)
+            self.ui.actionSave_Settings_As.setEnabled(False)
+            self.ui.actionLoad_Settings_From.setEnabled(False)
+
             # refresh view box
             self.current_frame.update_value(1)
             self.ui.progressBar.setValue(100)
@@ -186,6 +193,11 @@ class App(QMainWindow):
         self.likelihood.change_readonly(ro=False)
         self.video_file_path.change_readonly(ro=False)
         self.position_suffix.change_readonly(ro=False)
+
+        self.ui.actionSave_Settings.setEnabled(True)
+        self.ui.actionLoad_Settings.setEnabled(True)
+        self.ui.actionSave_Settings_As.setEnabled(True)
+        self.ui.actionLoad_Settings_From.setEnabled(True)
 
         try:
             # clear all video contents
@@ -347,8 +359,29 @@ class App(QMainWindow):
         self.save_data_set()
 
     def save_settings(self):
+        self._save_settings('.settings.cfg')
+
+    def load_settings(self):
+        self._load_settings('.settings.cfg')
+
+    def save_settings_as(self):
+        file_name, ok = QFileDialog.getSaveFileName(self, directory = '.')
+        if ok:
+            if file_name[-4:] == '.cfg':
+                pass
+            else:
+                file_name = file_name + '.cfg'
+            self._save_settings(file_name)
+            self.save_settings()
+
+    def load_settings_from(self):
+        file_name, ok = QFileDialog.getOpenFileName(self, directory = '.', filter='Configuration File (*.cfg)')
+        if ok:
+            self._load_settings(file_name)
+            self.save_settings()
+
+    def _save_settings(self, file_name):
         try:
-            file_name = 'settings.xml'
             doc = ET.Element('label_editor_lettings')
             item_list = dir(self)
             for name in item_list:
@@ -364,9 +397,8 @@ class App(QMainWindow):
         except Exception as ex_msg:
             print(ex_msg)
 
-    def load_settings(self):
+    def _load_settings(self, file_name):
         try:
-            file_name = 'settings.xml'
             settings = ET.parse(file_name).getroot()
             for setting in settings:
                 if hasattr(self, setting.attrib['name']):
