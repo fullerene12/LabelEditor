@@ -21,7 +21,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_3">
-    <item row="0" column="0">
+    <item row="1" column="0">
      <widget class="QGroupBox" name="video_groupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -41,7 +41,7 @@
       <layout class="QGridLayout" name="gridLayout_5"/>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item row="3" column="0">
      <widget class="QGroupBox" name="control_groupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -63,13 +63,6 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Video File Path</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="5">
         <widget class="QPushButton" name="next_bad_frame_pushButton">
          <property name="enabled">
@@ -80,6 +73,13 @@
          </property>
          <property name="shortcut">
           <string>Alt+B</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Video File Path</string>
          </property>
         </widget>
        </item>
@@ -166,15 +166,8 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="14" colspan="3">
-        <widget class="QProgressBar" name="progressBar">
-         <property name="value">
-          <number>0</number>
-         </property>
-         <property name="format">
-          <string>%p% Loaded</string>
-         </property>
-        </widget>
+       <item row="1" column="13">
+        <widget class="QDoubleSpinBox" name="current_frame_doubleSpinBox"/>
        </item>
        <item row="1" column="14">
         <widget class="QLabel" name="label">
@@ -189,8 +182,15 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="13">
-        <widget class="QDoubleSpinBox" name="current_frame_doubleSpinBox"/>
+       <item row="1" column="4">
+        <widget class="QDoubleSpinBox" name="total_bad_frame_doubleSpinBox">
+         <property name="frame">
+          <bool>true</bool>
+         </property>
+         <property name="readOnly">
+          <bool>false</bool>
+         </property>
+        </widget>
        </item>
        <item row="1" column="12">
         <widget class="QLabel" name="label_7">
@@ -215,32 +215,6 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="4">
-        <widget class="QDoubleSpinBox" name="total_bad_frame_doubleSpinBox">
-         <property name="frame">
-          <bool>true</bool>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="14" rowspan="2" colspan="3">
-        <widget class="QPushButton" name="close_video_pushButton">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Close</string>
-         </property>
-        </widget>
-       </item>
        <item row="5" column="2" colspan="7">
         <widget class="QPlainTextEdit" name="position_suffix_plainTextEdit">
          <property name="sizePolicy">
@@ -260,6 +234,25 @@
          </property>
         </widget>
        </item>
+       <item row="3" column="14" rowspan="2" colspan="3">
+        <widget class="QPushButton" name="close_video_pushButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Close</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="11">
+        <widget class="QDoubleSpinBox" name="likelihood_doubleSpinBox"/>
+       </item>
        <item row="1" column="10">
         <widget class="QLabel" name="label_8">
          <property name="sizePolicy">
@@ -273,8 +266,8 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="11">
-        <widget class="QDoubleSpinBox" name="likelihood_doubleSpinBox"/>
+       <item row="1" column="1">
+        <widget class="QDoubleSpinBox" name="current_bad_frame_doubleSpinBox"/>
        </item>
        <item row="3" column="10" rowspan="2" colspan="4">
         <widget class="QPushButton" name="load_pushButton">
@@ -292,13 +285,17 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QDoubleSpinBox" name="current_bad_frame_doubleSpinBox"/>
-       </item>
        <item row="5" column="10" colspan="3">
         <widget class="QCheckBox" name="auto_path_checkBox">
          <property name="text">
           <string>AutoFill Data Path</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2" colspan="7">
+        <widget class="QLineEdit" name="video_file_path_lineEdit">
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
@@ -334,9 +331,6 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="2" colspan="7">
-        <widget class="QLineEdit" name="video_file_path_lineEdit"/>
-       </item>
        <item row="4" column="9">
         <widget class="QPushButton" name="set_data_path_pushButton">
          <property name="enabled">
@@ -364,9 +358,29 @@
          <property name="enabled">
           <bool>false</bool>
          </property>
+         <property name="text">
+          <string>Under Development, For Future Use</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="14" colspan="3">
+        <widget class="QProgressBar" name="progressBar">
+         <property name="value">
+          <number>0</number>
+         </property>
+         <property name="format">
+          <string>%p% Loaded</string>
+         </property>
         </widget>
        </item>
       </layout>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>For questions please contact Hao Wu (hao.wu.fudan@gmail.com). This package is distributed under MIT License.</string>
+      </property>
      </widget>
     </item>
    </layout>
