@@ -65,16 +65,26 @@ class App(QMainWindow):
         self.video_file_path = FileLQ(name='video_file_path',default_dir='./')
         self.video_file_path.connect_to_browse_widgets(self.ui.video_file_path_lineEdit, self.ui.set_dir_pushButton)
         self.video_file_path.update_value('./')
+
+        # Data File Path
+        self.data_path = FileLQ(name='data_path', default_dir='./')
+        self.data_path.connect_to_browse_widgets(self.ui.data_path_lineEdit, self.ui.set_data_path_pushButton)
+        self.data_path.update_value('./')
+        self.data_path.change_readonly(ro=False)
+
         # position file suffix
         self.position_suffix = LoggedQuantity(name='position_suffix', dtype=str,
                                               initial='DeepCut_resnet101_trackingledsAug13shuffle1_500000')
         self.position_suffix.connect_to_widget(self.ui.position_suffix_plainTextEdit)
 
         # load_position flag
-        self.auto_path = LoggedQuantity(name='auto_path', dtype=bool, initial=True)
-        self.auto_path.connect_to_widget(self.ui.auto_path_checkBox)
         self.load_position = LoggedQuantity(name='load_position', dtype=bool, initial=True)
         self.load_position.connect_to_widget(self.ui.load_position_checkBox)
+
+        # auto fill data path flag
+        self.auto_path = LoggedQuantity(name='auto_path', dtype=bool, initial=True)
+        self.auto_path.connect_to_widget(self.ui.auto_path_checkBox)
+
 
         # connect button actions
         self.ui.load_pushButton.clicked.connect(self.load)
@@ -91,7 +101,6 @@ class App(QMainWindow):
         # declare other attributes
         self.video = None
         self.click_proxy = None
-        self.data_path = ''
         self.data_set = None
         self.num_label = 0
         self.current_label_id = 0
@@ -119,15 +128,12 @@ class App(QMainWindow):
                                                   slot=self.set_label)
 
                 # load coordinates for labels
-                if self.video_file_path.value[-4:] == 'h264':
-                    self.data_path = self.video_file_path.value[:-5] + self.position_suffix.value + '.h5'
-                elif self.video_file_path.value[-3:] == 'mp4':
-                    self.data_path = self.video_file_path.value[:-4] + self.position_suffix.value + '.h5'
-                elif self.video_file_path.value[-3:] == 'avi':
-                    self.data_path = self.video_file_path.value[:-4] + self.position_suffix.value + '.h5'
-                else:
-                    self.data_path = self.video_file_path.value.split('.')[0] + self.position_suffix.value + '.h5'
-                self.data_set = pd.read_hdf(self.data_path)
+                if self.auto_path.value:
+                    if self.video_file_path.value[-4:] == 'h264':
+                        self.data_path.update_value(self.video_file_path.value[:-5]+self.position_suffix.value+'.h5')
+                    else:
+                        self.data_path.update_value(self.video_file_path.value[:-4]+self.position_suffix.value +'.h5')
+                self.data_set = pd.read_hdf(self.data_path.value)
                 self.num_label = self.data_set[self.position_suffix.value].keys().levshape[0]
                 self.labels = list()
                 for i in range(self.num_label):
@@ -155,7 +161,7 @@ class App(QMainWindow):
                 self.ui.extrapolate_pushButton.setEnabled(True)
                 self.ui.clear_pushButton.setEnabled(True)
                 self.ui.next_bad_frame_pushButton.setEnabled(True)
-                self.ui.smooth_and_close_pushButton.setEnabled(True)
+                self.ui.smooth_and_close_pushButton.setEnabled(False)
 
             self.ui.next_frame_pushButton.setEnabled(True)
             self.ui.load_pushButton.setEnabled(False)
@@ -164,6 +170,8 @@ class App(QMainWindow):
             self.video_file_path.change_readonly(ro=True)
             self.position_suffix.change_readonly(ro=True)
             self.load_position.change_readonly(ro=True)
+            self.data_path.change_readonly(ro=True)
+            self.auto_path.change_readonly(ro=True)
 
             self.ui.actionSave_Settings.setEnabled(False)
             self.ui.actionLoad_Settings.setEnabled(False)
@@ -193,6 +201,8 @@ class App(QMainWindow):
         self.likelihood.change_readonly(ro=False)
         self.video_file_path.change_readonly(ro=False)
         self.position_suffix.change_readonly(ro=False)
+        self.data_path.change_readonly(ro=False)
+        self.auto_path.change_readonly(ro=False)
 
         self.ui.actionSave_Settings.setEnabled(True)
         self.ui.actionLoad_Settings.setEnabled(True)
@@ -215,7 +225,6 @@ class App(QMainWindow):
             self.video = None
 
             # clear data contents and view box click binding
-            self.data_path = ''
             self.num_label = 0
             self.current_label_id = 0
             self.click_proxy = None
@@ -322,7 +331,7 @@ class App(QMainWindow):
         self.current_label_id %= self.num_label
 
     def save_data_set(self):
-        self.data_set.to_hdf(self.data_path, key=self.position_suffix.value, mode='w')
+        self.data_set.to_hdf(self.data_path.value, key=self.position_suffix.value, mode='w')
 
     def extrapolate(self):
         text_input, ok = QInputDialog.getText(self, 'Extrapolation',

@@ -132,7 +132,7 @@
           <string>-&gt;</string>
          </property>
          <property name="shortcut">
-          <string/>
+          <string>Alt+N</string>
          </property>
         </widget>
        </item>
@@ -334,7 +334,7 @@
        <item row="4" column="9">
         <widget class="QPushButton" name="set_data_path_pushButton">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -354,12 +354,12 @@
         </widget>
        </item>
        <item row="4" column="2" colspan="7">
-        <widget class="QLineEdit" name="data_path_path_lineEdit">
+        <widget class="QLineEdit" name="data_path_lineEdit">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="text">
-          <string>Under Development, For Future Use</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -370,6 +370,13 @@
          </property>
          <property name="format">
           <string>%p% Loaded</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Data File Path</string>
          </property>
         </widget>
        </item>
