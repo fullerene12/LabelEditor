@@ -19,9 +19,9 @@ Simply clone the the directory to your folder
 
 Go to the LabelEditor folder, and type in
 
-'''
+```
 python3 main.py
-'''
+```
 
 ## Authors
 
