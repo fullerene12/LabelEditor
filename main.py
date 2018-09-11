@@ -107,6 +107,9 @@ class App(QMainWindow):
         self.bad_frames = None
         self.pens = None
 
+        # list of frames that is marked for edit
+        self.marked_frame_list = list()
+
         self.show()
 
         try:
@@ -121,7 +124,7 @@ class App(QMainWindow):
             self.total_frame.update_value(self.video.total_frames)
             self.current_frame.change_min_max(vmin=0, vmax=self.video.total_frames-1)
             self.current_frame.change_readonly(ro=False)
-
+            
             if self.load_position.value:
                 # connect click event to set label method
                 self.click_proxy = pg.SignalProxy(self.video_image.scene().sigMouseClicked, delay=0,

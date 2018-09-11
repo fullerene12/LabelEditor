@@ -20,28 +20,8 @@
    <string>Label Editor</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_3">
+   <layout class="QGridLayout" name="gridLayout_2">
     <item row="1" column="0">
-     <widget class="QGroupBox" name="video_groupBox">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>1677215</width>
-        <height>16777215</height>
-       </size>
-      </property>
-      <property name="title">
-       <string/>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_5"/>
-     </widget>
-    </item>
-    <item row="3" column="0">
      <widget class="QGroupBox" name="control_groupBox">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -142,7 +122,7 @@
           <bool>false</bool>
          </property>
          <property name="text">
-          <string>Save Current Frame</string>
+          <string>Mark Current Frame</string>
          </property>
         </widget>
        </item>
@@ -383,10 +363,37 @@
       </layout>
      </widget>
     </item>
-    <item row="4" column="0">
+    <item row="2" column="0">
      <widget class="QLabel" name="label_5">
       <property name="text">
        <string>For questions please contact Hao Wu (hao.wu.fudan@gmail.com). This package is distributed under MIT License.</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="video_groupBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>1677215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_5"/>
+     </widget>
+    </item>
+    <item row="0" column="1" rowspan="2">
+     <widget class="QSlider" name="verticalSlider">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
      </widget>
     </item>
