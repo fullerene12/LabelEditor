@@ -29,7 +29,8 @@ class App(QMainWindow):
         self.video_image = pg.ImageItem()
         self.video_view.addItem(self.video_image)
         self.video_image.setOpts(axisOrder='row-major')
-
+        self.histogram = pg.HistogramLUTItem(self.video_image)
+        self.video_layout.addItem(self.histogram)
         self.scatter = pg.ScatterPlotItem()
         self.video_view.addItem(self.scatter)
 
